@@ -12,7 +12,7 @@ import {
   getAllSubCategoriesModule,
   getSpecificSubCategoryModule,
   updateSubCategoryModule,
-} from "./controller/subcategory.js";
+} from "./controller/subCategory.js";
 import auth, { roles } from "../../middleware/auth.js";
 import { endpoints } from './subcategory.endPoint.js';
 
