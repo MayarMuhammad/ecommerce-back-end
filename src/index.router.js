@@ -25,6 +25,9 @@ const bootstrap = (app, express) => {
   })
   app.use(morgan('dev'));
   //Setup API Routing 
+  app.use(`/`, (req, res, next) => {
+    return res.json({ message: 'Welcome to our e-commerce backend' })
+  })
   app.use(`/auth`, authRouter)
   app.use(`/user`, userRouter)
   app.use(`/products`, productRouter)
