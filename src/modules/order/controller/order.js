@@ -17,9 +17,9 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     if (!isCouponExist) {
       return next(new AppError('Coupon not found', StatusCodes.NOT_FOUND));
     }
-    // if (isCouponExist.usedBy.includes(req.user._id)) {
-    //   return next(new AppError('This coupon is used by this user before', StatusCodes.CONFLICT));
-    // }
+    if (isCouponExist.usedBy.includes(req.user._id)) {
+      return next(new AppError('This coupon is used by this user before', StatusCodes.CONFLICT));
+    }
     if (isCouponExist.expiresIn < Date.now() || isCouponExist.usedBy.length >= isCouponExist.numberOfUses) {
       return next(new AppError('Coupon expired', StatusCodes.GONE));
     }
