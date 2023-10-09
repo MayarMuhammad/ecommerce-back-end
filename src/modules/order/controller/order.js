@@ -6,8 +6,15 @@ import productModel from "../../../../Database/models/Product.model.js";
 import orderModel from "../../../../Database/models/Order.model.js";
 import cartModel from './../../../../Database/models/Cart.model.js';
 import Stripe from 'stripe';
+import { createInvoice } from './../../../utils/createInvoice.js';
+import { fileURLToPath } from 'url';
+import path from "path";
+import sendEmail from "../../../utils/email.js";
+import { createHTML } from './../../../utils/email.js';
+import fs from 'fs';
 
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
 export const createOrder = asyncHandler(async (req, res, next) => {
@@ -57,6 +64,7 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     foundedIDs.push(checkedProduct._id);
     price += (checkedProduct.priceAfterDiscount * product.quantity);
   };
+  const paymentPrice = price - (price * ((req.body.coupon?.amount || 0) / 100))
   const order = await orderModel.create({
     userID: req.user._id,
     address,
@@ -66,9 +74,36 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     coupon: req.body.coupon?._id,
     paymentMethod,
     price,
-    paymentPrice: price - (price * ((req.body.coupon?.amount || 0) / 100)),
+    paymentPrice,
     status: paymentMethod == 'card' ? 'waitPayment' : 'placed'
   });
+  const invoice = {
+    customer: {
+      email: req.user.email,
+      paymentPrice,
+      username: req.user.name,
+      address
+    },
+    items: existedProducts.map(product => {
+      return {
+        item: product.product.name,
+        description: product.product.description,
+        quantity: product.quantity,
+        amount: product.product.paymentPrice
+      }
+    }),
+    subtotal: price
+  }
+  const pdfPath = path.join(__dirname, `../../../utils/pdf/${req.user._id}.pdf`);
+  createInvoice(invoice, pdfPath);
+  await sendEmail({
+    to: req.user.email, subject: 'Order Invoice', html: createHTML("Your Order Invoice"), attachments: [{
+      filename: "Order Invoice",
+      path: pdfPath,
+      contentType: 'application/pdf'
+    }]
+  });
+  fs.unlinkSync(pdfPath);
   if (paymentMethod == 'card') {
     if (req.body.coupon) {
       const coupon = await stripe.coupons.create({ percent_off: req.body.coupon.amount, duration: "once" });

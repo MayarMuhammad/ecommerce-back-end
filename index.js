@@ -10,7 +10,7 @@ import bootstrap from './src/index.router.js'
 const app = express()
 // setup port and the baseUrl
 const port = process.env.PORT || 5000
-bootstrap(app ,express)
+bootstrap(app, express)
 
 app.listen(port, () => {
   console.log(`Server is running on port ..... ${port}`);

@@ -266,7 +266,7 @@ export const createHTML = (text) => {
 </html>`
 }
 
-const sendEmail = async ({ from = process.env.EMAIL, to, cc, bcc, subject, text, html, attachments = [] } = {}) => {
+const sendEmail = async ({ to, subject, html, attachments = [] } = {}) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -275,7 +275,7 @@ const sendEmail = async ({ from = process.env.EMAIL, to, cc, bcc, subject, text,
     },
   });
 
-  const info = await transporter.sendMail({ from: `Email Confirmation`, to, cc, bcc, subject, text, html, attachments });
+  const info = await transporter.sendMail({ from: `Email Confirmation`, to, subject, html, attachments });
   return info.rejected.length ? false : true;
 };
 

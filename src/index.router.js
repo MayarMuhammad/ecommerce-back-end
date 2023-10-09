@@ -1,4 +1,3 @@
-import authRouter from './modules/auth/auth.routes.js'
 import brandRouter from './modules/brand/brand.routes.js'
 import cartRouter from './modules/cart/cart.routes.js'
 import categoryRouter from './modules/category/category.routes.js'
@@ -25,10 +24,6 @@ const bootstrap = (app, express) => {
   })
   app.use(morgan('dev'));
   //Setup API Routing 
-  app.use(`/`, (req, res, next) => {
-    return res.json({ message: 'Welcome to our e-commerce backend' })
-  })
-  app.use(`/auth`, authRouter)
   app.use(`/user`, userRouter)
   app.use(`/products`, productRouter)
   app.use(`/categories`, categoryRouter)
@@ -38,6 +33,9 @@ const bootstrap = (app, express) => {
   app.use(`/cart`, cartRouter)
   app.use(`/order`, orderRouter)
   app.use(`/brands`, brandRouter)
+  app.use(`/`, (req, res, next) => {
+    return res.json({ message: 'Welcome to our e-commerce backend' })
+  })
   app.all("*", (req, res, next) => {
     next(new AppError("Invalid Routing", StatusCodes.NOT_FOUND))
   });

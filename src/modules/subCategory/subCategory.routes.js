@@ -27,6 +27,6 @@ router
   .route("/:id")
   .put(auth(endpoints.subCategoryCRUD), validation(updateSubCategoryValidator), updateSubCategoryModule)
   .delete(auth(endpoints.subCategoryCRUD), validation(deleteSubCategoryValidator), deleteSubCategoryModule)
-  .get(validation(getSpecificCategoryValidator), getSpecificSubCategoryModule);;
+  .get(validation(getSpecificCategoryValidator), getSpecificSubCategoryModule);
 
 export default router;

@@ -1,4 +1,3 @@
-import { addOne, deleteOne, getAll, updateOne, getProductByID } from "../../handlers/factory.js";
 import productModel from './../../../../Database/models/Product.model.js';
 import { StatusCodes } from 'http-status-codes';
 import categoryModel from './../../../../Database/models/Category.model.js';
